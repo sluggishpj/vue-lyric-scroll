@@ -1,6 +1,6 @@
 {
     "name": "vue-lyric-scroll",
-    "version": "0.0.1",
+    "version": "1.0.1",
     "description": "a vue component for scrolling lyric",
     "main": "dist/lyric-scroll.umd.js",
     "module": "dist/lyric-scroll.esm.js",
@@ -8,6 +8,10 @@
     "browser": {
         "./sfc": "src/lyric-scroll.vue"
     },
+    "files": [
+        "src",
+        "dist"
+    ],
     "scripts": {
         "build": "npm run build:umd & npm run build:es & npm run build:unpkg",
         "build:umd": "rollup --config build/rollup.config.js --format umd --file dist/lyric-scroll.umd.js",
