@@ -18,7 +18,7 @@
                 :style="{padding: `${unitDivide(lyricMargin, 2)} 0`}"
                 :class="{
                     [lyricCenterClass]: index === centerLyricIdx,
-                    [lyricActiveClass]: isActiveLyric(index)
+                    [lyricActiveClass]: index === activeLyricIdx
                 }">
 
                 <p :style="{lineHeight: lyricLineheight}">{{item[1]}}</p>
@@ -28,7 +28,11 @@
 
         <!-- 拖拽时中间标记 -->
         <div class="center-mark" v-if="isDragging">
-            <div class="triangle" :style="{borderColor: `transparent transparent transparent ${triangleColor}`, borderWidth: `${unitDivide(triangleWidth, 1.732)} 0 ${unitDivide(triangleWidth, 1.732)} ${triangleWidth}`}" @click="changeCurrentTime"></div>
+            <div class="triangle"
+                :style="{
+                    borderColor: `transparent transparent transparent ${triangleColor}`,
+                    borderWidth: `${unitDivide(triangleWidth, 1.732)} 0 ${unitDivide(triangleWidth, 1.732)} ${triangleWidth}`}"
+                    @click="changeCurrentTime"></div>
             <div class="line" :style="{background: centerLineColor}"></div>
             <div class="target-time" :style="{color: centerTimeColor}">{{allLyric[centerLyricIdx] && timeToStr(allLyric[centerLyricIdx][0])}}</div>
         </div>
@@ -78,10 +82,10 @@ export default {
             type: String,
             default: 'orange'
         },
-        // 拖拽时左边出现的三角形宽度
+        // 拖拽时左边出现的等边三角形的高度
         triangleWidth: {
             type: String,
-            default: '20px'
+            default: '40px'
         },
         // 拖拽时中间线的颜色
         centerLineColor: {
@@ -134,6 +138,31 @@ export default {
             return result
         },
 
+        // 每句歌词及其翻译对应的div的offsetTop
+        offsetTopList() {
+            let resultArr = []
+            Array.from(this.wrapper.querySelectorAll('div')).forEach(el => {
+                setTimeout(() => {
+                    resultArr.push(el.offsetTop)
+                }, 0)
+            })
+            return resultArr
+        },
+
+        // 当前高亮的歌词下标（也就是第几句，从0开始）
+        activeLyricIdx() {
+            let allLyric = this.allLyric
+            let currentTime = this.currentTime
+            for(let i = 0, len = allLyric.length; i<len; i++) {
+                if((allLyric[i][0] < currentTime)
+                        &&
+                    (allLyric[i+1] && allLyric[i+1][0] > currentTime || !allLyric[i+1])) {
+                    return i
+                }
+            }
+            return -1
+        },
+
         // 包裹全部歌词的容器
         wrapper() {
             return this.$refs.lyricWrapper
@@ -153,9 +182,10 @@ export default {
         lastLyricHeight() {
             return this.wrapper.querySelector('div:last-child').offsetHeight
         },
+
         // 歌词距顶部和底部的距离，也是歌词向下滚动的最大值
         lyricPadding() {
-            return this.viewHeight * 0.44
+            return this.viewHeight * 0.46
         },
 
         // nowTranslateY的最小值，也就是歌词向上滚动的最大值
@@ -165,19 +195,9 @@ export default {
                 this.lyricPadding -
                 this.lastLyricHeight
             )
-        },
-
-        // 每句歌词及其翻译对应的div的offsetTop
-        offsetTopList() {
-            let resultArr = []
-            Array.from(this.wrapper.querySelectorAll('div')).forEach(el => {
-                setTimeout(() => {
-                    resultArr.push(el.offsetTop)
-                }, 0)
-            })
-            return resultArr
         }
     },
+
     methods: {
         // 带单位的字符串除以数字，如60px/2=15px
         unitDivide(unitNum, num) {
@@ -185,18 +205,7 @@ export default {
             let unit = unitNum.replace(num1, '')
             return `${num1 / num}${unit}`
         },
-        // 是否高亮第index句歌词
-        isActiveLyric(index) {
-            let nowLyricStartTime = this.allLyric[index][0]
-            let nextLyric = this.allLyric[index + 1]
-            let currentTime = this.currentTime
-            return (
-                (nowLyricStartTime <= currentTime &&
-                    nextLyric &&
-                    nextLyric[0] > currentTime) ||
-                (nowLyricStartTime <= currentTime && !nextLyric)
-            )
-        },
+
         // 把秒数转换为xx:xx的形式
         timeToStr(num) {
             num = Math.round(num)
@@ -210,6 +219,7 @@ export default {
             }
             return minute + ':' + second
         },
+
         // 拖拽后点击视野中间左侧三角形更改进度
         changeCurrentTime() {
             this.$emit(
@@ -220,7 +230,8 @@ export default {
                 this.isDragging = false
             })
         },
-        // 实时获取当前元素是translateY
+
+        // 实时获取当前元素的translateY
         getTranslateY(el) {
             let curStyle = window.getComputedStyle(el)
             let curTransform = curStyle.transform || curStyle.webkitTransform
@@ -230,16 +241,9 @@ export default {
         // 更新歌词位置
         updateLyricPos() {
             // 没有拖拽歌词
-            if (!this.isDragging) {
-                // 当前高亮的歌词
-                let activeLyric = this.wrapper.querySelector(
-                    `.${this.lyricActiveClass}`
-                )
-
-                if (activeLyric) {
-                    let scrollTarget = activeLyric.offsetTop - this.lyricPadding
-                    this.nowTranslateY = -scrollTarget
-                }
+            if(!this.isDragging) {
+                let scrollTarget = this.offsetTopList[this.activeLyricIdx] - this.lyricPadding
+                this.nowTranslateY = -scrollTarget
             }
         },
 
@@ -251,6 +255,7 @@ export default {
             this.startTranslateY = Number(this.getTranslateY(this.wrapper))
             this.nowTranslateY = this.startTranslateY
         },
+
         onTouchMove(e) {
             e.preventDefault() // 防止屏幕跟着滚动
             let clientY = e.touches[0].clientY
@@ -267,12 +272,14 @@ export default {
                 this.centerLyricIdx = this.findCenterLyricIdx()
             }
         },
+
         onTouchEnd() {
             this.timer = setTimeout(() => {
                 this.isDragging = false
                 this.centerLyricIdx = -1
             }, this.dragendWaitTime)
         },
+
         // 找出当前视野中最接近中间的歌词，返回下标
         findCenterLyricIdx() {
             const halfViewHeight = this.viewHeight / 2
@@ -306,41 +313,32 @@ export default {
     overflow: hidden;
     position: relative;
     .center-mark {
+        box-sizing: border-box;
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        height: 20px;
         width: 100%;
         display: flex;
         align-items: center;
         // 拖拽三角形
         .triangle {
-            cursor: pointer;
             border-style: solid;
-            margin-right: 10px;
-            margin-left: 10px;
         }
 
         // 中间指示线
         .line {
             flex: 1;
             height: 1px;
-        }
-
-        // 当前中间歌词的开始时间
-        .target-time {
-            padding: 0 10px;
+            margin: 0 20px;
         }
     }
 }
 .lyric-wrapper {
     transition: ease 0.3s;
     // 每一句歌词及其翻译
-    & > div {
-        p {
-            padding: 0;
-            margin: 0;
-        }
+    & > div p {
+        padding: 0;
+        margin: 0;
     }
 }
 </style>
