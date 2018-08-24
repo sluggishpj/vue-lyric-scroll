@@ -48,7 +48,7 @@ Vue.use(LyricScroll)
 | ------------------- | ------------------------------------------------ | ------------- | ------------------ | ------------------------ |
 | lyric               | 歌词对象，键是歌词开始时间字符串，值是对应的歌词 | Object        | required           | {0: '你好', 2: '世界'}   |
 | currentTime         | 当前的播放时间                                   | Number        | required           | 52                       |
-| tLyric              | 翻译的歌词对象                                   | Object        | {}                 | {0: 'hello', 2: 'world'} |
+| tLyric              | 翻译的歌词对象                                   | Object        | null                 | {0: 'hello', 2: 'world'} |
 | lyricActiveClass    | 当前唱到的歌词类名                               | String        | ''                 | 'lyric-active'           |
 | lyricCenterClass    | 拖拽时中间歌词类名                               | String        | ''                 | 'lyric-center'           |
 | lyricScrollTime     | 滚动到目标歌词时间，单位ms                       | Number        | 400                |                          |
