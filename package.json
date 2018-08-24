@@ -17,8 +17,7 @@
         "build:umd": "rollup --config build/rollup.config.js --format umd --file dist/lyric-scroll.umd.js",
         "build:es": "rollup --config build/rollup.config.js --format es --file dist/lyric-scroll.esm.js",
         "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/lyric-scroll.min.js",
-        "dev": "vue serve --open example/index.vue",
-        "publish": ""
+        "dev": "vue serve --open example/index.vue"
     },
     "devDependencies": {
         "node-sass": "^4.9.3",
