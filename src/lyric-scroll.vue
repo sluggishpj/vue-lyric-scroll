@@ -52,7 +52,12 @@ export default {
             required: true
         },
         // 译词，格式为{开始时间: 歌词, ...}
-        tLyric: Object,
+        tLyric: {
+            type: Object,
+            default() {
+                return null
+            }
+        },
         // 当前唱到的歌词类名
         lyricActiveClass: String,
         // 拖拽时中间歌词类名
@@ -120,7 +125,7 @@ export default {
         // 格式：[[开始时间, 原词, 译词],...]
         allLyric() {
             let result = []
-            if (JSON.stringify(this.tLyric) !== '{}') {
+            if (this.tLyric !== null) {
                 // 有翻译
                 for (let time in this.lyric) {
                     result.push([
@@ -138,14 +143,20 @@ export default {
             return result
         },
 
+        // 每一句歌词的高度
+        perLyricHeight() {
+            return this.wrapper.querySelector('div:first-child').offsetHeight
+        },
+
         // 每句歌词及其翻译对应的div的offsetTop
         offsetTopList() {
             let resultArr = []
-            Array.from(this.wrapper.querySelectorAll('div')).forEach(el => {
-                setTimeout(() => {
-                    resultArr.push(el.offsetTop)
-                }, 0)
-            })
+            let perLyricHeight = this.perLyricHeight
+            let lyricLen = this.wrapper.querySelectorAll('div').length
+
+            for(let i = 0; i < lyricLen; i++) {
+                resultArr.push(i * perLyricHeight)
+            }
             return resultArr
         },
 
@@ -178,14 +189,9 @@ export default {
             return this.$refs.lyricView.offsetHeight
         },
 
-        // 最后一句歌词高度
-        lastLyricHeight() {
-            return this.wrapper.querySelector('div:last-child').offsetHeight
-        },
-
-        // 歌词距顶部和底部的距离，也是歌词向下滚动的最大值
+        // 歌词滚动到顶部/底部，距容器顶部/底部的距离，也是歌词向下滚动的最大值
         lyricPadding() {
-            return this.viewHeight * 0.46
+            return this.viewHeight / 2 - this.perLyricHeight / 2
         },
 
         // nowTranslateY的最小值，也就是歌词向上滚动的最大值
@@ -193,7 +199,7 @@ export default {
             return -(
                 this.wrapperHeight -
                 this.lyricPadding -
-                this.lastLyricHeight
+                this.perLyricHeight
             )
         }
     },
