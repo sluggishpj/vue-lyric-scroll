@@ -16,7 +16,7 @@ npm run dev
 ### 没有传入t-lyric时无法加载组件
 > https://github.com/sluggishpj/vue-lyric-scroll/issues/1
 
-* 问题出在props中的tLyric没有设置默认值，导致其值为undefined，而我在下面的computed中做了`JSON.stringify(this.tLyric) !== '{}'`这个判断。没有注意`JSON.stringify(undefined) !== {}`条件成立
+* 问题出在props中的tLyric没有设置默认值，导致其值为undefined，而我在下面的computed中做了`JSON.stringify(this.tLyric) !== '{}'`这个判断。没有注意`JSON.stringify(undefined) !== '{}'`条件成立
 ```vue
 //...
 props: {
@@ -24,11 +24,11 @@ props: {
     // ...
 },
 computed: {
-	// 包含原词和译词（如果有的话）
+    // 包含原词和译词（如果有的话）
     // 格式：[[开始时间, 原词, 译词],...]
     allLyric() {
         let result = []
-		// 此处有问题
+	// 此处有问题
         if (JSON.stringify(this.tLyric) !== '{}') {
 			
         }
@@ -44,19 +44,19 @@ computed: {
 //...
 props: {
     tLyric: {
-		type: Object,
+	type: Object,
         default() {
-        	return null
+            return null
         }
     }
     // ...
 },
 computed: {
-	// 包含原词和译词（如果有的话）
+    // 包含原词和译词（如果有的话）
     // 格式：[[开始时间, 原词, 译词],...]
     allLyric() {
         let result = []
-		// 修改此处
+	// 修改此处
         if (this.tLyric !== null) {
 			
         }
