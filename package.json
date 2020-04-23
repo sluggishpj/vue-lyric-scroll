@@ -1,44 +1,61 @@
 {
-    "name": "vue-lyric-scroll",
-    "version": "1.0.4",
-    "description": "a vue component for scrolling lyric",
-    "main": "dist/lyric-scroll.umd.js",
-    "module": "dist/lyric-scroll.esm.js",
-    "unpkg": "dist/lyric-scroll.min.js",
-    "browser": {
-        "./sfc": "src/lyric-scroll.vue"
-    },
-    "files": [
-        "src",
-        "dist"
-    ],
-    "scripts": {
-        "build": "npm run build:umd & npm run build:es & npm run build:unpkg",
-        "build:umd": "rollup --config build/rollup.config.js --format umd --file dist/lyric-scroll.umd.js",
-        "build:es": "rollup --config build/rollup.config.js --format es --file dist/lyric-scroll.esm.js",
-        "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/lyric-scroll.min.js",
-        "dev": "vue serve --open example/index.vue"
-    },
-    "devDependencies": {
-        "node-sass": "^4.9.3",
-        "rollup": "^0.64.1",
-        "rollup-plugin-buble": "^0.19.2",
-        "rollup-plugin-sass": "^0.9.2",
-        "rollup-plugin-terser": "^1.0.1",
-        "rollup-plugin-vue": "^4.3.2",
-        "sass-loader": "^7.1.0",
-        "vue": "^2.5.17",
-        "vue-template-compiler": "^2.5.17"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/sluggishpj/vue-lyric-scroll.git"
-    },
-    "keywords": [
-        "lyric",
-        "scroll",
-        "vue"
-    ],
-    "author": "sluggishpj",
-    "license": "MIT"
+  "name": "vue-lyric-scroll",
+  "version": "1.0.4",
+  "description": "a vue component for scrolling lyric",
+  "author": {
+    "name": "sluggishpj",
+    "email": "sluggishpj@gmail.com"
+  },
+  "license": "MIT",
+  "main": "dist/lyric-scroll.common.js",
+  "module": "dist/lyric-scroll.esm.js",
+  "unpkg": "dist/lyric-scroll.umd.min.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "BUILD_TYPE=modular vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "core-js": "^3.6.4",
+    "vue": "^2.6.11"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.3.0",
+    "@vue/cli-plugin-eslint": "~4.3.0",
+    "@vue/cli-service": "~4.3.0",
+    "@vue/eslint-config-standard": "^5.1.2",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-vue": "^6.2.2",
+    "lint-staged": "^9.5.0",
+    "sass": "^1.26.3",
+    "sass-loader": "^8.0.2",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,vue}": [
+      "vue-cli-service lint",
+      "git add"
+    ]
+  },
+  "jsdelivr": "dist/lyric-scroll.umd.min.js",
+  "keywords": [
+    "lyric",
+    "scroll",
+    "vue"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sluggishpj/vue-lyric-scroll.git"
+  }
 }
