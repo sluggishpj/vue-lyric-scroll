@@ -1,13 +1,15 @@
 <template>
   <div id="app">
-    <audio
-      controls
-      class="music-player"
-      ref="audio"
-      :src="musicSrc"
-      :loop="true"
-      @timeupdate="timeupdate"
-    ></audio>
+    <div class="audio-wrapper">
+      <audio
+        controls
+        class="music-player"
+        ref="audio"
+        :src="musicSrc"
+        :loop="true"
+        @timeupdate="timeupdate"
+      ></audio>
+    </div>
 
     <div class="lyric">
       <LyricScroll
@@ -16,6 +18,9 @@
         :lyric-active-class="'lyric-active'"
         :lyric-center-class="'lyric-center'"
         triangle-width="14px"
+        triangle-color="#fff"
+        center-line-color="#fff"
+        center-time-color="#fff"
         :current-time="currentTime"
         @change-current-time="handleChangeCurrentTime"
       />
@@ -104,26 +109,37 @@ body {
   margin: 0;
   padding: 0;
 }
+
 #app {
+  width: 100%;
   height: 100%;
-  font-size: 32px;
+  font-size: 16px;
   display: grid;
-  grid-template-rows: 100px calc(100vh - 100px);
+  grid-template-rows: 100px calc(100vh - 120px);
   justify-content: center;
+  background-color: #64363c;
+  margin: 0 auto;
 }
 
-.music-player {
+.audio-wrapper {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .lyric {
   width: 100%;
+  color: #adaaa8;
+  box-sizing: border-box;
+  border: 1px dashed #ccc;
+  box-sizing: border-box;
   text-align: center;
 }
 .lyric-active {
   // 需要最高级，否则可能被内部的.center-lyric覆盖
-  color: orange !important;
+  color: #fff !important;
 }
 .lyric-center {
-  color: #ccc;
+  color: #fff;
 }
 </style>
