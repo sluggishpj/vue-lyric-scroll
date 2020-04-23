@@ -140,6 +140,8 @@ export default {
                     result.push([Number(time), this.lyric[time]])
                 }
             }
+            // 按时间升序
+            result.sort((a, b) => a[0] - b[0])
             return result
         },
 
@@ -165,7 +167,7 @@ export default {
             let allLyric = this.allLyric
             let currentTime = this.currentTime
             for(let i = 0, len = allLyric.length; i<len; i++) {
-                if((allLyric[i][0] < currentTime)
+                if((allLyric[i][0] <= currentTime)
                         &&
                     (allLyric[i+1] && allLyric[i+1][0] > currentTime || !allLyric[i+1])) {
                     return i

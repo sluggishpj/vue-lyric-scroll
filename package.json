@@ -1,6 +1,6 @@
 {
     "name": "vue-lyric-scroll",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "a vue component for scrolling lyric",
     "main": "dist/lyric-scroll.umd.js",
     "module": "dist/lyric-scroll.esm.js",
