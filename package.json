@@ -1,17 +1,19 @@
 {
   "name": "vue-lyric-scroll",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "a vue component for scrolling lyric",
   "author": {
     "name": "sluggishpj",
     "email": "sluggishpj@gmail.com"
   },
   "license": "MIT",
-  "main": "dist/lyric-scroll.common.js",
-  "module": "dist/lyric-scroll.esm.js",
-  "unpkg": "dist/lyric-scroll.umd.min.js",
+  "main": "dist/vue-lyric-scroll.common.js",
+  "module": "dist/vue-lyric-scroll.esm.js",
+  "unpkg": "dist/vue-lyric-scroll.umd.min.js",
   "files": [
-    "dist"
+    "dist/vue-lyric-scroll.common.js",
+    "dist/vue-lyric-scroll.esm.js",
+    "dist/vue-lyric-scroll.umd.min.js"
   ],
   "scripts": {
     "serve": "vue-cli-service serve src/main.js",
