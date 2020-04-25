@@ -33,4 +33,4 @@ jobs:
           command: |
             git config --global user.email $GH_EMAIL
             git config --global user.name $GH_NAME
-            yarn run deploy
+            yarn run deploy-demo
