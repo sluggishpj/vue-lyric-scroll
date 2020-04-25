@@ -138,7 +138,6 @@ export default {
   }),
   mounted() {
     this.wrapper = this.$refs.lyricWrapper
-    this.viewHeight = this.$refs.lyricView.offsetHeight
   },
   computed: {
     // 包含原词和译词（如果有的话）
@@ -322,6 +321,8 @@ export default {
       this.$nextTick(() => {
         // 获取第1句 和最后 1句歌词高度
         this.setFirstLastLyricHeight()
+        // 获取可视区高度
+        this.viewHeight = this.$refs.lyricView.offsetHeight
         // 获取容器高度
         this.wrapperHeight = this.$refs.lyricWrapper.offsetHeight
         // 设置初始滚动
