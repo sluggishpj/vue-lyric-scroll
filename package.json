@@ -1,6 +1,6 @@
 {
   "name": "vue-lyric-scroll",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "a vue component for scrolling lyric",
   "author": {
     "name": "sluggishpj",
@@ -25,7 +25,7 @@
   },
   "standard-version": {
     "scripts": {
-      "postbump": "yarn build && git add dist && git commit -m 'chore: new build'"
+      "postbump": "npm run build-lib && git add . && git commit -m \"chore: new build\""
     },
     "types": [
       {
