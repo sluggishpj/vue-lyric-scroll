@@ -119,8 +119,12 @@ export default {
     startClientY: 0,
     // 开始接触的translateY
     startTranslateY: 0,
+    // 开始接触的时间
+    startTimestamp: 0,
     // 是否正在拖拽
     isDragging: false,
+    // 是否接触屏幕
+    isTouching: false,
     // 当前歌词容器滚动的高度
     nowTranslateY: 0,
     // touchend后设置的定时器
@@ -190,7 +194,7 @@ export default {
     },
 
     // 第一句歌词距容器顶部的最大距离
-    lyricTopPadding() {
+    maxTranslateY() {
       return this.viewHeight / 2 - this.firstLyricHeight / 2
     },
 
@@ -265,10 +269,13 @@ export default {
     // 触屏事件
     onTouchStart(e) {
       this.isDragging = true
+      this.isTouching = true
       clearTimeout(this.timer)
       this.startClientY = e.touches[0].clientY
       this.startTranslateY = Number(this.getTranslateY(this.wrapper))
       this.nowTranslateY = this.startTranslateY
+
+      this.startTimestamp = Date.now()
     },
 
     onTouchMove(e) {
@@ -276,9 +283,9 @@ export default {
       const clientY = e.touches[0].clientY
       const targetTranslateY =
         this.startTranslateY + clientY - this.startClientY
-      if (targetTranslateY > this.lyricTopPadding) {
+      if (targetTranslateY > this.maxTranslateY) {
         // 抵达上边界
-        this.nowTranslateY = this.lyricTopPadding
+        this.nowTranslateY = this.maxTranslateY
       } else if (targetTranslateY < this.minTranslateY) {
         // 移出下边界
         this.nowTranslateY = this.minTranslateY
@@ -288,11 +295,41 @@ export default {
       }
     },
 
-    onTouchEnd() {
+    onTouchEnd(e) {
+      this.isTouching = false
+      const endTimestamp = Date.now()
+      const clientY = e.changedTouches[0].clientY
+      const { startTranslateY, startClientY, startTimestamp } = this
+      // 速度
+      const speed = (clientY - startClientY) / (endTimestamp - startTimestamp)
+      // 以歌词为主体，向上滚为负，向下滚为正
+      const sym = speed > 0 ? 1 : -1
+      // 加速度
+      const a = 0.006 * sym
+      // 运动时间
+      const t = speed / a
+      if (Math.abs(speed) > 0.8) {
+        // 开始位置
+        const startPos = startTranslateY + clientY - startClientY
+        this.easeTween({
+          startPos,
+          startTime: Date.now(),
+          speed,
+          a,
+          t,
+          minPos: this.minTranslateY,
+          maxPos: this.maxTranslateY,
+          cb: pos => {
+            this.nowTranslateY = pos
+            this.centerLyricIdx = this.findCenterLyricIdx()
+          }
+        })
+      }
+
       this.timer = setTimeout(() => {
         this.isDragging = false
         this.centerLyricIdx = -1
-      }, this.dragendWaitTime)
+      }, this.dragendWaitTime + t)
     },
 
     // 找出当前视野中最接近中间的歌词，返回下标
@@ -311,6 +348,50 @@ export default {
           return i
         }
       }
+    },
+
+    /**
+     * startPos: 开始位置
+     * startTime: 开始时刻
+     * speed: 初始速度
+     * a: 加速度
+     * t: 运动剩余时间
+     * minPos: 位置最小值
+     * maxPos: 位置最大值
+     * cb: pos改变时 执行回调
+     */
+    easeTween({ startPos, startTime, speed, a, t, minPos, maxPos, cb }) {
+      if (t > 0 && !this.isTouching) {
+        window.requestAnimationFrame(() => {
+          const nowTime = Date.now()
+          let passTime = nowTime - startTime
+          if (t < passTime) {
+            passTime = t
+          }
+          startPos += speed * passTime + 0.5 * a * passTime ** 2
+          speed += a * passTime
+          t -= passTime
+
+          if (startPos <= minPos) {
+            startPos = minPos
+            t = 0
+          } else if (startPos >= maxPos) {
+            startPos = maxPos
+            t = 0
+          }
+          cb(startPos)
+          this.easeTween({
+            startPos,
+            startTime: nowTime,
+            speed,
+            a,
+            t,
+            minPos,
+            maxPos,
+            cb
+          })
+        })
+      }
     }
   },
   watch: {
@@ -326,7 +407,7 @@ export default {
         // 获取容器高度
         this.wrapperHeight = this.$refs.lyricWrapper.offsetHeight
         // 设置初始滚动
-        this.nowTranslateY = this.lyricTopPadding
+        this.nowTranslateY = this.maxTranslateY
       })
     }
   }
